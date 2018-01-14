@@ -7,6 +7,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.IO.Ports;
+
 
 namespace Datos_Sensor
 {
@@ -16,9 +18,13 @@ namespace Datos_Sensor
         List<Panel> paneles_Visibles = new List<Panel>();
         List<ToolStripMenuItem> opciones = new List<ToolStripMenuItem>();
         List<bool> opciones_Seleccionadas = new List<bool>();
+        double[] Datos = new double[4]; // presión en Pa, temperatura en m°C, humedad en %, luz en mlux
+
         public Form1()
         {
             InitializeComponent();
+            //cbPuertosSeriales.DataSource = SerialPort.GetPortNames();
+            CheckForIllegalCrossThreadCalls = false;
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -45,6 +51,19 @@ namespace Datos_Sensor
             opciones_Seleccionadas[1] = !opciones_Seleccionadas[1];
             Actualizar_Paneles();
         }
+
+        private void spXDK_DataReceived(object sender, System.IO.Ports.SerialDataReceivedEventArgs e)
+        {
+            //Datos=spXDK.ReadLine().Split('|'); //error
+            //se obtienen los datos del puerto serial y se guardan en Datos
+            Datos=Array.ConvertAll(spXDK.ReadLine().Split('|'), Double.Parse);
+            //Se muestran los datos en sus respectivas labels
+            lblPresión.Text = Datos[0] +" Pa";
+            lblTemperatura.Text = Datos[1]/1000 + " °C";
+            lblHumedad.Text = Datos[2] + " %";
+            lblLuz.Text = Datos[3]/1000 + " lux";
+        }
+
         private void ruidoToolStripMenuItem_Click(object sender, EventArgs e)
         {
             opciones_Seleccionadas[2] = !opciones_Seleccionadas[2];
@@ -73,6 +92,18 @@ namespace Datos_Sensor
                     paneles[i].Visible = false;
             }
         }
-        
+
+        private void btnActualizarPuertos_Click(object sender, EventArgs e)
+        {
+            cbPuertosSeriales.DataSource = SerialPort.GetPortNames();
+            
+        }
+
+        private void btnConexionXDK_Click(object sender, EventArgs e)
+        {
+            spXDK.PortName = cbPuertosSeriales.SelectedItem.ToString();
+            spXDK.Open();
+            btnConexionXDK.Enabled = false;
+        }
     }
 }
