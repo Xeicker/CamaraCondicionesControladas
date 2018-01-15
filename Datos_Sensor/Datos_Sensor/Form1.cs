@@ -58,7 +58,7 @@ namespace Datos_Sensor
             //se obtienen los datos del puerto serial y se guardan en Datos
             Datos=Array.ConvertAll(spXDK.ReadLine().Split('|'), Double.Parse);
             //Se muestran los datos en sus respectivas labels
-            lblPresión.Text = Datos[0] +" Pa";
+            lblPresion.Text = Datos[0] +" Pa";
             lblTemperatura.Text = Datos[1]/1000 + " °C";
             lblHumedad.Text = Datos[2] + " %";
             lblLuz.Text = Datos[3]/1000 + " lux";
@@ -76,9 +76,6 @@ namespace Datos_Sensor
         }
         void Actualizar_Paneles()
         {
-            Form2 f = new Form2();
-            if (f.ShowDialog() == DialogResult.OK)
-                label9.Text = f.Valor;
             int posicion = 10;
             for(int i = 0; i<paneles.Count; i++)
             {
@@ -86,24 +83,38 @@ namespace Datos_Sensor
                 {
                     paneles[i].Visible = true;
                     paneles[i].Location = new System.Drawing.Point(posicion, paneles[i].Location.Y);
-                    posicion += 160;
+                    posicion += 164;
                 }
                 else
                     paneles[i].Visible = false;
             }
         }
-
-        private void btnActualizarPuertos_Click(object sender, EventArgs e)
+        
+        private void item_Click(object sender, EventArgs e)
         {
-            cbPuertosSeriales.DataSource = SerialPort.GetPortNames();
-            
+            string p = sender.ToString();
+            puertoToolStripMenuItem.Text = "Puerto: " + p;
+            spXDK.PortName = p;
+            //if(!spXDK.IsOpen)
+                //spXDK.Open();
         }
-
-        private void btnConexionXDK_Click(object sender, EventArgs e)
+            private void actualizarToolStripMenuItem_MouseEnter(object sender, EventArgs e)
         {
-            spXDK.PortName = cbPuertosSeriales.SelectedItem.ToString();
-            spXDK.Open();
-            btnConexionXDK.Enabled = false;
+
+            string[] items = {"COM1","COM2" };//SerialPort.GetPortNames();
+            while (actualizarToolStripMenuItem.DropDownItems.Count > 2)
+            {
+                actualizarToolStripMenuItem.DropDownItems.RemoveAt(2);
+            }
+            foreach (string item in items)
+            {
+                actualizarToolStripMenuItem.DropDownItems.Add(item);
+            }
+            for(int i = 0; i<actualizarToolStripMenuItem.DropDownItems.Count; i++)
+            {
+                if(i!=1)
+                    actualizarToolStripMenuItem.DropDownItems[i].Click += new EventHandler(item_Click);
+            }
         }
     }
 }
