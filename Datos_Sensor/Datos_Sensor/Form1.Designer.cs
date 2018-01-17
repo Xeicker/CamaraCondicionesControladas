@@ -72,6 +72,7 @@
             this.label3 = new System.Windows.Forms.Label();
             this.spXDK = new System.IO.Ports.SerialPort(this.components);
             this.timer1 = new System.Windows.Forms.Timer(this.components);
+            this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
             this.menuStrip1.SuspendLayout();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
@@ -107,6 +108,7 @@
             this.crearArchivoDeDatosToolStripMenuItem.Name = "crearArchivoDeDatosToolStripMenuItem";
             this.crearArchivoDeDatosToolStripMenuItem.Size = new System.Drawing.Size(192, 22);
             this.crearArchivoDeDatosToolStripMenuItem.Text = "Crear archivo de datos";
+            this.crearArchivoDeDatosToolStripMenuItem.Click += new System.EventHandler(this.crearArchivoDeDatosToolStripMenuItem_Click);
             // 
             // actualizarToolStripMenuItem
             // 
@@ -207,7 +209,8 @@
             this.tB_RB_P.Size = new System.Drawing.Size(69, 20);
             this.tB_RB_P.TabIndex = 2;
             this.tB_RB_P.Text = "40";
-            this.tB_RB_P.Leave += new System.EventHandler(this.textBox2_Leave);
+            this.tB_RB_P.KeyDown += new System.Windows.Forms.KeyEventHandler(this.tB_RA_P_KeyDown);
+            this.tB_RB_P.Leave += new System.EventHandler(this.textBox1_Leave);
             // 
             // cB_P
             // 
@@ -240,6 +243,7 @@
             this.tB_RA_P.Size = new System.Drawing.Size(69, 20);
             this.tB_RA_P.TabIndex = 1;
             this.tB_RA_P.Text = "100";
+            this.tB_RA_P.KeyDown += new System.Windows.Forms.KeyEventHandler(this.tB_RA_P_KeyDown);
             this.tB_RA_P.Leave += new System.EventHandler(this.textBox1_Leave);
             // 
             // label8
@@ -281,7 +285,8 @@
             this.tB_RA_T.Size = new System.Drawing.Size(69, 20);
             this.tB_RA_T.TabIndex = 10;
             this.tB_RA_T.Text = "40";
-            this.tB_RA_T.Leave += new System.EventHandler(this.textBox4_Leave);
+            this.tB_RA_T.KeyDown += new System.Windows.Forms.KeyEventHandler(this.tB_RA_P_KeyDown);
+            this.tB_RA_T.Leave += new System.EventHandler(this.textBox1_Leave);
             // 
             // tB_RB_T
             // 
@@ -290,7 +295,8 @@
             this.tB_RB_T.Size = new System.Drawing.Size(69, 20);
             this.tB_RB_T.TabIndex = 11;
             this.tB_RB_T.Text = "10";
-            this.tB_RB_T.Leave += new System.EventHandler(this.textBox3_Leave);
+            this.tB_RB_T.KeyDown += new System.Windows.Forms.KeyEventHandler(this.tB_RA_P_KeyDown);
+            this.tB_RB_T.Leave += new System.EventHandler(this.textBox1_Leave);
             // 
             // lblTemperatura
             // 
@@ -371,7 +377,8 @@
             this.tB_RA_H.Size = new System.Drawing.Size(69, 20);
             this.tB_RA_H.TabIndex = 15;
             this.tB_RA_H.Text = "100";
-            this.tB_RA_H.Leave += new System.EventHandler(this.textBox5_Leave);
+            this.tB_RA_H.KeyDown += new System.Windows.Forms.KeyEventHandler(this.tB_RA_P_KeyDown);
+            this.tB_RA_H.Leave += new System.EventHandler(this.textBox1_Leave);
             // 
             // tB_RB_H
             // 
@@ -380,11 +387,14 @@
             this.tB_RB_H.Size = new System.Drawing.Size(69, 20);
             this.tB_RB_H.TabIndex = 16;
             this.tB_RB_H.Text = "50";
-            this.tB_RB_H.Leave += new System.EventHandler(this.textBox6_Leave);
+            this.tB_RB_H.KeyDown += new System.Windows.Forms.KeyEventHandler(this.tB_RA_P_KeyDown);
+            this.tB_RB_H.Leave += new System.EventHandler(this.textBox1_Leave);
             // 
             // cB_H
             // 
             this.cB_H.FormattingEnabled = true;
+            this.cB_H.Items.AddRange(new object[] {
+            "%"});
             this.cB_H.Location = new System.Drawing.Point(14, 186);
             this.cB_H.Name = "cB_H";
             this.cB_H.Size = new System.Drawing.Size(69, 21);
@@ -439,7 +449,8 @@
             this.tB_RA_L.Size = new System.Drawing.Size(69, 20);
             this.tB_RA_L.TabIndex = 21;
             this.tB_RA_L.Text = "100";
-            this.tB_RA_L.Leave += new System.EventHandler(this.textBox7_Leave);
+            this.tB_RA_L.KeyDown += new System.Windows.Forms.KeyEventHandler(this.tB_RA_P_KeyDown);
+            this.tB_RA_L.Leave += new System.EventHandler(this.textBox1_Leave);
             // 
             // tB_RB_L
             // 
@@ -448,11 +459,15 @@
             this.tB_RB_L.Size = new System.Drawing.Size(69, 20);
             this.tB_RB_L.TabIndex = 22;
             this.tB_RB_L.Text = "0";
-            this.tB_RB_L.Leave += new System.EventHandler(this.textBox8_Leave);
+            this.tB_RB_L.KeyDown += new System.Windows.Forms.KeyEventHandler(this.tB_RA_P_KeyDown);
+            this.tB_RB_L.Leave += new System.EventHandler(this.textBox1_Leave);
             // 
             // cB_L
             // 
             this.cB_L.FormattingEnabled = true;
+            this.cB_L.Items.AddRange(new object[] {
+            "mLux",
+            "Lux"});
             this.cB_L.Location = new System.Drawing.Point(13, 187);
             this.cB_L.Name = "cB_L";
             this.cB_L.Size = new System.Drawing.Size(69, 21);
@@ -474,9 +489,12 @@
             // 
             // timer1
             // 
-            this.timer1.Enabled = true;
             this.timer1.Interval = 2000;
             this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
+            // 
+            // saveFileDialog1
+            // 
+            this.saveFileDialog1.FileOk += new System.ComponentModel.CancelEventHandler(this.saveFileDialog1_FileOk);
             // 
             // Form1
             // 
@@ -494,6 +512,7 @@
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "Form1";
             this.Text = "XDK ";
+            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.Form1_FormClosed);
             this.Load += new System.EventHandler(this.Form1_Load);
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
@@ -555,5 +574,6 @@
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Timer timer1;
+        private System.Windows.Forms.SaveFileDialog saveFileDialog1;
     }
 }

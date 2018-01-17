@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO.Ports;
-
+using System.IO;
 
 namespace Datos_Sensor
 {
@@ -17,7 +17,9 @@ namespace Datos_Sensor
         List<Panel> paneles = new List<Panel>();
         List<Label> labels = new List<Label>();
         List<ComboBox> CBox = new List<ComboBox>();
-
+        StreamWriter sw;
+        string FileLoc ="";
+        int intervalo = 0, t = 0;
         List<Panel> paneles_Visibles = new List<Panel>();
         List<ToolStripMenuItem> opciones = new List<ToolStripMenuItem>();
         List<bool> opciones_Seleccionadas = new List<bool>();
@@ -33,7 +35,6 @@ namespace Datos_Sensor
             //cbPuertosSeriales.DataSource = SerialPort.GetPortNames();
             CheckForIllegalCrossThreadCalls = false;
         }
-
         private void Form1_Load(object sender, EventArgs e)
         {
             paneles.Add(panel1);
@@ -48,7 +49,10 @@ namespace Datos_Sensor
             CBox.Add(cB_T);
             CBox.Add(cB_H);
             CBox.Add(cB_L);
-            cB_P.SelectedIndex = 0;
+            foreach(ComboBox cB in CBox)
+            {
+                cB.SelectedIndex = 0;
+            }
             foreach (ToolStripMenuItem op in verToolStripMenuItem.DropDownItems)
             {
                 opciones.Add(op);
@@ -68,9 +72,11 @@ namespace Datos_Sensor
             Factores.Add("mmHg", 0.0075006375541921);
             Factores.Add("bar", 0.00001);
             Factores.Add("atm", 0.0000098692);
+            Factores.Add("%", 1);
+            Factores.Add("Lux", 0.001);
+            Factores.Add("mLux", 1);
 
         }
-
         private void presionToolStripMenuItem_Click(object sender, EventArgs e)
         {
             opciones_Seleccionadas[0] = !opciones_Seleccionadas[0];
@@ -86,11 +92,21 @@ namespace Datos_Sensor
             //Datos=spXDK.ReadLine().Split('|'); //error
             //se obtienen los datos del puerto serial y se guardan en Datos
             Datos=Array.ConvertAll(spXDK.ReadLine().Split('|'), Double.Parse);
+            Datos[1] /= 1000;
             //Se muestran los datos en sus respectivas labels
-            lblPresion.Text = Datos[0] +" Pa";
-            lblTemperatura.Text = Datos[1]/1000 + " °C";
-            lblHumedad.Text = Datos[2] + " %";
-            lblLuz.Text = Datos[3]/1000 + " lux";
+            Actualizar_Labels();
+            if (FileLoc != "" && t==intervalo)
+            {
+                sw.Flush();
+                foreach (double s in Datos)
+                {
+                    sw.Write(s.ToString());
+                    sw.Write(",");
+                }
+                sw.WriteLine();
+                t = 0;
+            }
+            t++;
         }
         private void ruidoToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -121,14 +137,16 @@ namespace Datos_Sensor
         {
             for(int i = 0; i <labels.Count; i++)
             {
-                if(Datos[i]>= Limites[i*2+1] && Datos[i]<= Limites[i * 2])
-                    labels[i].Size = new System.Drawing.Size(51,(int)((Datos[i]-Limites[i*2+1])/(Limites[i * 2]- Limites[i * 2 + 1])*150)+10);
-                else if(Datos[i] > Limites[i * 2])
+
+                double valor =(i==1)? ((CBox[i].SelectedItem.ToString()=="K")?  Datos[i]+ 273: (CBox[i].SelectedItem.ToString() == "°F") ? Datos[i]*1.8+32: Datos[i]): Datos[i] * Factores[CBox[i].SelectedItem.ToString()];
+                if(valor>= Limites[i*2+1] && valor<= Limites[i * 2])
+                    labels[i].Size = new System.Drawing.Size(51,(int)((valor-Limites[i*2+1])/(Limites[i * 2]- Limites[i * 2 + 1])*145)+15);
+                else if(valor > Limites[i * 2])
                     labels[i].Size = new System.Drawing.Size(51, 160);
                 else
-                    labels[i].Size = new System.Drawing.Size(51, 10);
+                    labels[i].Size = new System.Drawing.Size(51, 15);
                 labels[i].Location = new System.Drawing.Point(97, 56 + 160 - labels[i].Size.Height);
-                labels[i].Text = Datos[i].ToString("N");
+                labels[i].Text = valor.ToString("N");
             }
         } 
         private void item_Click(object sender, EventArgs e)
@@ -136,13 +154,13 @@ namespace Datos_Sensor
             string p = sender.ToString();
             puertoToolStripMenuItem.Text = "Puerto: " + p;
             spXDK.PortName = p;
-            //if(!spXDK.IsOpen)
-                //spXDK.Open();
+            if(!spXDK.IsOpen)
+                spXDK.Open();
         }
         private void actualizarToolStripMenuItem_MouseEnter(object sender, EventArgs e)
         {
 
-            string[] items = {"COM1","COM2" };//SerialPort.GetPortNames();
+            string[] items = SerialPort.GetPortNames();
             while (actualizarToolStripMenuItem.DropDownItems.Count > 2)
             {
                 actualizarToolStripMenuItem.DropDownItems.RemoveAt(2);
@@ -162,40 +180,13 @@ namespace Datos_Sensor
             TextBox tbAux = (TextBox)sender;
             try
             {
-                Limites[Limites_StoI[tbAux.Name]] = Convert.ToDouble(tbAux.Text)*Factores[CBox[Limites_StoI[tbAux.Name] / 2].SelectedItem.ToString()];
+                Limites[Limites_StoI[tbAux.Name]] = Convert.ToDouble(tbAux.Text);
+                Actualizar_Labels();
             }
             catch (FormatException)
             {
                 tbAux.Text = "";
             }
-        }
-        private void textBox2_Leave(object sender, EventArgs e)
-        {
-            textBox1_Leave(sender, e);
-        }
-        private void textBox4_Leave(object sender, EventArgs e)
-        {
-            textBox1_Leave(sender, e);
-        }
-        private void textBox3_Leave(object sender, EventArgs e)
-        {
-            textBox1_Leave(sender, e);
-        }
-        private void textBox5_Leave(object sender, EventArgs e)
-        {
-            textBox1_Leave(sender, e);
-        }
-        private void textBox6_Leave(object sender, EventArgs e)
-        {
-            textBox1_Leave(sender, e);
-        }
-        private void textBox7_Leave(object sender, EventArgs e)
-        {
-            textBox1_Leave(sender, e);
-        }
-        private void textBox8_Leave(object sender, EventArgs e)
-        {
-            textBox1_Leave(sender, e);
         }
         private void timer1_Tick(object sender, EventArgs e)
         {
@@ -204,6 +195,87 @@ namespace Datos_Sensor
             Datos[2] = rd.NextDouble()*100;
             Datos[3] = rd.NextDouble()*100;
             Actualizar_Labels();
+            if (FileLoc != "" && t == intervalo)
+            {
+                sw.Flush();
+                foreach (double s in Datos)
+                {
+                    sw.Write(s.ToString());
+                    sw.Write(",");
+                }
+                sw.WriteLine();
+                t = 0;
+            }
+            t++;
+        }
+        private void tB_RA_P_KeyDown(object sender, KeyEventArgs e)
+        {
+            if(e.KeyData == Keys.Enter)
+            {
+                textBox1_Leave(sender, e);
+            }
+        }
+        private void crearArchivoDeDatosToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (crearArchivoDeDatosToolStripMenuItem.Text == "Crear archivo de datos")
+            {
+                Form2 f2 = new Form2();
+                f2.ShowDialog();
+                intervalo = (f2.Valor[1] == "Min") ? Convert.ToInt16(f2.Valor[0]) * 20 : Convert.ToInt16(f2.Valor[0]) / 3;
+                saveFileDialog1.DefaultExt = ".csv";
+                saveFileDialog1.Title = "Seleccione el archivo";
+                saveFileDialog1.ShowDialog();
+                crearArchivoDeDatosToolStripMenuItem.Text = "Detener";
+
+            }
+            else
+            {
+                try
+                {
+                    sw.Close();
+                }
+                catch { }
+                try
+                {
+                    spXDK.Close();
+                }
+                catch { }
+                foreach (ComboBox Cb in CBox)
+                {
+                    Cb.Enabled = true;
+                }
+                puertoToolStripMenuItem.Text = "Puerto: ";
+                crearArchivoDeDatosToolStripMenuItem.Text = "Crear archivo de datos";
+            }
+        }
+        private void Form1_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            try
+            {
+                sw.Close();
+            }
+            catch { }
+            try
+            {
+                spXDK.Close();
+            }
+            catch { }
+        }
+        private void saveFileDialog1_FileOk(object sender, CancelEventArgs e)
+        {
+            FileLoc = saveFileDialog1.FileName;
+            sw = new StreamWriter(FileLoc,true);
+            sw.Flush();
+            foreach (ComboBox Cb in CBox)
+            {
+                sw.Write(Cb.SelectedItem.ToString());
+                sw.Write(",");
+            }
+            sw.WriteLine();
+            foreach (ComboBox Cb in CBox)
+            {
+                Cb.Enabled = false;
+            }
         }
     }
 }
