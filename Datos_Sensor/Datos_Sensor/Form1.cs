@@ -210,7 +210,7 @@ namespace Datos_Sensor
                 for(int i =0; i<Datos.Length; i++)
                 {
                     sw.Write((Datos[i]).ToString());
-                    sw.Write(",");
+                    sw.Write(",");//p
                     if (i != 1) {
                         sw.Write((Datos[i] * Factores[CBox[i].SelectedItem.ToString()]).ToString());
                     }
