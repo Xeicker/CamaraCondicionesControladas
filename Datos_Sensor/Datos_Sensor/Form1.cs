@@ -95,12 +95,21 @@ namespace Datos_Sensor
             Datos[1] /= 1000;
             //Se muestran los datos en sus respectivas labels
             Actualizar_Labels();
-            if (FileLoc != "" && t==intervalo)
+            if (FileLoc != "" && t % intervalo == 0)
             {
                 sw.Flush();
-                foreach (double s in Datos)
+                for (int i = 0; i < Datos.Length; i++)
                 {
-                    sw.Write(s.ToString());
+                    if (i != 1)
+                    {
+                        sw.Write((Datos[i] * Factores[CBox[i].SelectedItem.ToString()]).ToString());
+                    }
+                    else
+                    {
+                        string aux = CBox[i].SelectedItem.ToString();
+                        double val = (aux == "°C") ? Datos[i] : (aux == "°F") ? Datos[i] * 1.8 + 32 : Datos[i] + 273;
+                        sw.Write(val);
+                    }
                     sw.Write(",");
                 }
                 sw.WriteLine();
@@ -195,13 +204,24 @@ namespace Datos_Sensor
             Datos[2] = rd.NextDouble()*100;
             Datos[3] = rd.NextDouble()*100;
             Actualizar_Labels();
-            if (FileLoc != "" && t == intervalo)
+            if (FileLoc != "" && t%intervalo==0)
             {
                 sw.Flush();
-                foreach (double s in Datos)
+                for(int i =0; i<Datos.Length; i++)
                 {
-                    sw.Write(s.ToString());
+                    sw.Write((Datos[i]).ToString());
                     sw.Write(",");
+                    if (i != 1) {
+                        sw.Write((Datos[i] * Factores[CBox[i].SelectedItem.ToString()]).ToString());
+                    }
+                    else
+                    {
+                        string aux = CBox[i].SelectedItem.ToString();
+                        double val = (aux == "°C") ? Datos[i] : (aux == "°F") ? Datos[i] * 1.8 + 32 : Datos[i] + 273;
+                        sw.Write(val);
+                    }
+                    sw.Write(",");
+
                 }
                 sw.WriteLine();
                 t = 0;
@@ -232,6 +252,7 @@ namespace Datos_Sensor
             {
                 try
                 {
+                    FileLoc = "";
                     sw.Close();
                 }
                 catch { }
@@ -264,6 +285,8 @@ namespace Datos_Sensor
         private void saveFileDialog1_FileOk(object sender, CancelEventArgs e)
         {
             FileLoc = saveFileDialog1.FileName;
+            sw = new StreamWriter(FileLoc, false);
+            sw.Close();
             sw = new StreamWriter(FileLoc,true);
             sw.Flush();
             foreach (ComboBox Cb in CBox)
