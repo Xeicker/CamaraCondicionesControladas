@@ -106,6 +106,8 @@ namespace Datos_Sensor
             if (FileLoc != "" && t % intervalo == 0)
             {
                 sw.Flush();
+                sw.Write(DateTime.Now.ToString("HH:mm:ss"));
+                sw.Write(",");
                 for (int i = 0; i < Datos.Length; i++)
                 {
                     if (i != 1)
@@ -217,12 +219,10 @@ namespace Datos_Sensor
             if (FileLoc != "" && t%intervalo==0)
             {
                 sw.Flush();
-                sw.Write(intervalo*t);
+                sw.Write(DateTime.Now.ToString("HH:mm:ss"));
                 sw.Write(",");
-                for(int i =0; i<Datos.Length; i++)
+                for (int i =0; i<Datos.Length; i++)
                 {
-                    //sw.Write((Datos[i]).ToString());
-                    //sw.Write(",");//p
                     if (i != 1) {
                         sw.Write((Datos[i] * Factores[CBox[i].SelectedItem.ToString()]).ToString());
                     }
@@ -298,12 +298,14 @@ namespace Datos_Sensor
         }
         private void saveFileDialog1_FileOk(object sender, CancelEventArgs e)
         {
+            DateTime D = DateTime.Now;
             FileLoc = saveFileDialog1.FileName;
             sw = new StreamWriter(FileLoc, false);
             sw.Close();
             sw = new StreamWriter(FileLoc,true);
             sw.Flush();
-            sw.Write("s,");
+            sw.WriteLine(D.ToString("dd/MM/yyyy HH:mm:ss"));
+            sw.Write(",");
             foreach (ComboBox Cb in CBox)
             {
                 sw.Write(Cb.SelectedItem.ToString());
