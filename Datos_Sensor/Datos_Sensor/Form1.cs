@@ -19,15 +19,15 @@ namespace Datos_Sensor
         List<ComboBox> CBox = new List<ComboBox>();
         StreamWriter sw;
         string FileLoc ="";
-        int intervalo = 0, t = 0;
+        int intervalo = 0, t = 1;
         List<Panel> paneles_Visibles = new List<Panel>();
         List<ToolStripMenuItem> opciones = new List<ToolStripMenuItem>();
         List<bool> opciones_Seleccionadas = new List<bool>();
         Random rd = new Random();
-        double[] Limites = { 100, 70, 40, 20, 100, 50, 100, 0 };
+        double[] Limites = { 100, 70, 40, 20, 100, 50, 100,40, 100, 0 };
         Dictionary<string, int> Limites_StoI = new Dictionary<string, int>();
         Dictionary<string, double> Factores = new Dictionary<string, double>();
-        double[] Datos = { 80, 25, 67, 10 };// new double[4]; // presión en Pa, temperatura en m°C, humedad en %, luz en mlux
+        double[] Datos = { 80, 25, 67, 50, 10 };// new double[4]; // presión en Pa, temperatura en m°C, humedad en %, ruido en mdB, luz en mlux
 
         public Form1()
         {
@@ -40,14 +40,17 @@ namespace Datos_Sensor
             paneles.Add(panel1);
             paneles.Add(panel2);
             paneles.Add(panel3);
+            paneles.Add(panel5);
             paneles.Add(panel4);
             labels.Add(lblPresion);
             labels.Add(lblTemperatura);
             labels.Add(lblHumedad);
+            labels.Add(lblRuido);
             labels.Add(lblLuz);
             CBox.Add(cB_P);
             CBox.Add(cB_T);
             CBox.Add(cB_H);
+            CBox.Add(cB_R);
             CBox.Add(cB_L);
             foreach(ComboBox cB in CBox)
             {
@@ -65,14 +68,18 @@ namespace Datos_Sensor
             Limites_StoI.Add("tB_RB_T", 3);
             Limites_StoI.Add("tB_RA_H", 4);
             Limites_StoI.Add("tB_RB_H", 5);
-            Limites_StoI.Add("tB_RA_L", 6);
-            Limites_StoI.Add("tB_RB_L", 7);
+            Limites_StoI.Add("tB_RA_R", 6);
+            Limites_StoI.Add("tB_RB_R", 7);
+            Limites_StoI.Add("tB_RA_L", 8);
+            Limites_StoI.Add("tB_RB_L", 9);
             Factores.Add("Pa", 1);
             Factores.Add("kPa", 0.001);
             Factores.Add("mmHg", 0.0075006375541921);
             Factores.Add("bar", 0.00001);
             Factores.Add("atm", 0.0000098692);
             Factores.Add("%", 1);
+            Factores.Add("mdB", 1);
+            Factores.Add("dB", 0.001);
             Factores.Add("Lux", 0.001);
             Factores.Add("mLux", 1);
 
@@ -93,6 +100,7 @@ namespace Datos_Sensor
             //se obtienen los datos del puerto serial y se guardan en Datos
             Datos=Array.ConvertAll(spXDK.ReadLine().Split('|'), Double.Parse);
             Datos[1] /= 1000;
+            
             //Se muestran los datos en sus respectivas labels
             Actualizar_Labels();
             if (FileLoc != "" && t % intervalo == 0)
@@ -162,9 +170,11 @@ namespace Datos_Sensor
         {
             string p = sender.ToString();
             puertoToolStripMenuItem.Text = "Puerto: " + p;
-            spXDK.PortName = p;
-            if(!spXDK.IsOpen)
+            if (!spXDK.IsOpen)
+            {
+                spXDK.PortName = p;
                 spXDK.Open();
+            }
         }
         private void actualizarToolStripMenuItem_MouseEnter(object sender, EventArgs e)
         {
@@ -199,18 +209,20 @@ namespace Datos_Sensor
         }
         private void timer1_Tick(object sender, EventArgs e)
         {
-            Datos[0] = rd.NextDouble()*100;
-            Datos[1] = (rd.NextDouble()-0.2)*50;
-            Datos[2] = rd.NextDouble()*100;
-            Datos[3] = rd.NextDouble()*100;
+            //Datos[0] = rd.NextDouble()*100;
+            //Datos[1] = (rd.NextDouble()-0.2)*50;
+            //Datos[2] = rd.NextDouble()*100;
+            //Datos[3] = rd.NextDouble()*100;
             Actualizar_Labels();
             if (FileLoc != "" && t%intervalo==0)
             {
                 sw.Flush();
+                sw.Write(intervalo*t);
+                sw.Write(",");
                 for(int i =0; i<Datos.Length; i++)
                 {
-                    sw.Write((Datos[i]).ToString());
-                    sw.Write(",");//p
+                    //sw.Write((Datos[i]).ToString());
+                    //sw.Write(",");//p
                     if (i != 1) {
                         sw.Write((Datos[i] * Factores[CBox[i].SelectedItem.ToString()]).ToString());
                     }
@@ -224,9 +236,11 @@ namespace Datos_Sensor
 
                 }
                 sw.WriteLine();
-                t = 0;
+                t++;
             }
-            t++;
+            //t++;
+            else if (FileLoc != "")
+                t = 1;
         }
         private void tB_RA_P_KeyDown(object sender, KeyEventArgs e)
         {
@@ -289,6 +303,7 @@ namespace Datos_Sensor
             sw.Close();
             sw = new StreamWriter(FileLoc,true);
             sw.Flush();
+            sw.Write("s,");
             foreach (ComboBox Cb in CBox)
             {
                 sw.Write(Cb.SelectedItem.ToString());
