@@ -24,7 +24,9 @@ namespace Datos_Sensor
         List<ToolStripMenuItem> opciones = new List<ToolStripMenuItem>();
         List<bool> opciones_Seleccionadas = new List<bool>();
         Random rd = new Random();
+        byte[] TempNibles = {0<<4,1 << 4, 3 << 4, 2 << 4, 6 << 4, 7 << 4, 5 << 4, 4 << 4, 12 << 4, 13 << 4, 9 << 4, 8 << 4, 10 << 4, 11 << 4 };
         double[] Limites = { 100, 70, 40, 20, 100, 50, 100,40, 100, 0 };
+        Dictionary<string, byte> Modes = new Dictionary<string, byte>();
         Dictionary<string, int> Limites_StoI = new Dictionary<string, int>();
         Dictionary<string, double> Factores = new Dictionary<string, double>();
         double[] Datos = { 80, 25, 67, 50, 10 };// new double[4]; // presión en Pa, temperatura en m°C, humedad en %, ruido en mdB, luz en mlux
@@ -82,7 +84,10 @@ namespace Datos_Sensor
             Factores.Add("dB", 0.001);
             Factores.Add("Lux", 0.001);
             Factores.Add("mLux", 1);
-
+            Modes.Add("Dry",4);
+            Modes.Add("Fan", 4);
+            Modes.Add("Auto", 8);
+            Modes.Add("Cool", 0);
         }
         private void presionToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -216,6 +221,8 @@ namespace Datos_Sensor
             //Datos[2] = rd.NextDouble()*100;
             //Datos[3] = rd.NextDouble()*100;
             Actualizar_Labels();
+            label9.Text = Convert.ToString(TempNibles[5] | Modes["Auto"],2);
+            label6.Text = Convert.ToString((byte)(~(TempNibles[5] | Modes["Auto"])), 2);
             if (FileLoc != "" && t%intervalo==0)
             {
                 sw.Flush();
