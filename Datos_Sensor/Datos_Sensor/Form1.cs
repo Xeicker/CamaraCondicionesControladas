@@ -38,6 +38,7 @@ namespace Datos_Sensor
         Dictionary<string, int> Limites_StoI = new Dictionary<string, int>();
         Dictionary<string, double> Factores = new Dictionary<string, double>();
         double[] Datos = { 80, 25, 67, 50, 10 };// new double[4]; // presión en Pa, temperatura en m°C, humedad en %, ruido en mdB, luz en mlux
+        bool primera = true;
 
         AireAcondicionado Aire = new AireAcondicionado();
         public Form1()
@@ -123,7 +124,13 @@ namespace Datos_Sensor
         {
             //Datos=spXDK.ReadLine().Split('|'); //error
             //se obtienen los datos del puerto serial y se guardan en Datos
-            Datos=Array.ConvertAll(spXDK.ReadLine().Split('|'), Double.Parse);
+            if (primera)
+            {
+                spXDK.ReadLine();
+                primera = !primera;
+            }
+            else
+                Datos = Array.ConvertAll(spXDK.ReadLine().Split('|'), Double.Parse);
             Datos[1] /= 1000;
             
             //Se muestran los datos en sus respectivas labels
