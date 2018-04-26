@@ -14,6 +14,11 @@ namespace Datos_Sensor
 {
     public partial class Form1 : Form
     {
+        struct AireAcondicionado {
+            public bool enc;
+            public int tmp;
+            public string mode, fanspeed;
+         }
         List<Panel> paneles = new List<Panel>();
         List<Label> labels = new List<Label>();
         List<ComboBox> CBox = new List<ComboBox>();
@@ -24,14 +29,18 @@ namespace Datos_Sensor
         List<ToolStripMenuItem> opciones = new List<ToolStripMenuItem>();
         List<bool> opciones_Seleccionadas = new List<bool>();
         Random rd = new Random();
+        string[] modos = { "Auto","Dry","Fan","Cool"}, fspeeds = {"Auto","Low","Mid","High" };
+        int msel=0, fssel=0;
         byte[] TempNibles = {0<<4,1 << 4, 3 << 4, 2 << 4, 6 << 4, 7 << 4, 5 << 4, 4 << 4, 12 << 4, 13 << 4, 9 << 4, 8 << 4, 10 << 4, 11 << 4 };
         double[] Limites = { 100, 70, 40, 20, 100, 50, 100,40, 100, 0 };
         Dictionary<string, byte> Modes = new Dictionary<string, byte>();
+        Dictionary<string, byte> Fspeed = new Dictionary<string, byte>();
         Dictionary<string, int> Limites_StoI = new Dictionary<string, int>();
         Dictionary<string, double> Factores = new Dictionary<string, double>();
         double[] Datos = { 80, 25, 67, 50, 10 };// new double[4]; // presión en Pa, temperatura en m°C, humedad en %, ruido en mdB, luz en mlux
         bool primera = true;
 
+        AireAcondicionado Aire = new AireAcondicionado();
         public Form1()
         {
             InitializeComponent();
@@ -45,6 +54,7 @@ namespace Datos_Sensor
             paneles.Add(panel3);
             paneles.Add(panel5);
             paneles.Add(panel4);
+            paneles.Add(P_Control);
             labels.Add(lblPresion);
             labels.Add(lblTemperatura);
             labels.Add(lblHumedad);
@@ -62,9 +72,18 @@ namespace Datos_Sensor
             foreach (ToolStripMenuItem op in verToolStripMenuItem.DropDownItems)
             {
                 opciones.Add(op);
-                op.Checked = true;
-                opciones_Seleccionadas.Add(true);
+                if (op.Text != "Control")
+                {
+                    op.Checked = true;
+                    opciones_Seleccionadas.Add(true);
+                }
+                else
+                {
+                    op.Checked = false;
+                    opciones_Seleccionadas.Add(false);
+                }
             }
+
             Limites_StoI.Add("tB_RA_P", 0);
             Limites_StoI.Add("tB_RB_P", 1);
             Limites_StoI.Add("tB_RA_T", 2);
@@ -89,15 +108,16 @@ namespace Datos_Sensor
             Modes.Add("Fan", 4);
             Modes.Add("Auto", 8);
             Modes.Add("Cool", 0);
-        }
-        private void presionToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            opciones_Seleccionadas[0] = !opciones_Seleccionadas[0];
-            Actualizar_Paneles();
-        }
-        private void temperaturaToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            opciones_Seleccionadas[1] = !opciones_Seleccionadas[1];
+
+            Fspeed.Add("Auto", 11<<4);
+            Fspeed.Add("Low", 9<<4);
+            Fspeed.Add("Mid", 5<<4);
+            Fspeed.Add("High", 3<<4);
+
+            Aire.enc = false;
+            Aire.tmp = 23;
+            Aire.mode = "Auto";
+            Aire.fanspeed = "Auto";
             Actualizar_Paneles();
         }
         private void spXDK_DataReceived(object sender, System.IO.Ports.SerialDataReceivedEventArgs e)
@@ -139,14 +159,44 @@ namespace Datos_Sensor
             }
             t++;
         }
-        private void ruidoToolStripMenuItem_Click(object sender, EventArgs e)
+
+        private void presionToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            opciones_Seleccionadas[0] = !opciones_Seleccionadas[0];
+            ((ToolStripMenuItem)sender).Checked = opciones_Seleccionadas[0];
+            Actualizar_Paneles();
+        }
+        private void temperaturaToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            opciones_Seleccionadas[1] = !opciones_Seleccionadas[1];
+            ((ToolStripMenuItem)sender).Checked = opciones_Seleccionadas[1];
+            Actualizar_Paneles();
+        }
+
+        private void humedadToolStripMenuItem_Click(object sender, EventArgs e)
         {
             opciones_Seleccionadas[2] = !opciones_Seleccionadas[2];
+            ((ToolStripMenuItem)sender).Checked = opciones_Seleccionadas[2];
+            Actualizar_Paneles();
+        }
+        private void ruidoToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            opciones_Seleccionadas[3] = !opciones_Seleccionadas[3];
+            ((ToolStripMenuItem)sender).Checked = opciones_Seleccionadas[3];
             Actualizar_Paneles();
         }
         private void luminocidadToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            opciones_Seleccionadas[3] = !opciones_Seleccionadas[3];
+            opciones_Seleccionadas[4] = !opciones_Seleccionadas[4];
+            ((ToolStripMenuItem)sender).Checked = opciones_Seleccionadas[4];
+            Actualizar_Paneles();
+        }
+        private void controlToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            opciones_Seleccionadas[5] = !opciones_Seleccionadas[5];
+            ((ToolStripMenuItem)sender).Checked = opciones_Seleccionadas[5];
+            if (opciones_Seleccionadas[5])
+                ActualizarP_Control();
             Actualizar_Paneles();
         }
         void Actualizar_Paneles()
@@ -161,7 +211,21 @@ namespace Datos_Sensor
                     posicion += 164;
                 }
                 else
+                {
                     paneles[i].Visible = false;
+                }
+            }
+        }
+        void ActualizarP_Control()
+        {
+            lbl_CMode.Text = Aire.mode;
+            lbl_CTmp.Text = Aire.tmp.ToString() + "°";
+            lbl_CFspeed.Text = Aire.fanspeed;
+            label14.Text = "";
+            byte[] Code = GenerateCodeAire();
+            foreach(byte b in Code)
+            {
+                label14.Text += b.ToString() + ",";
             }
         }
         void Actualizar_Labels()
@@ -223,13 +287,11 @@ namespace Datos_Sensor
         }
         private void timer1_Tick(object sender, EventArgs e)
         {
-            //Datos[0] = rd.NextDouble()*100;
-            //Datos[1] = (rd.NextDouble()-0.2)*50;
-            //Datos[2] = rd.NextDouble()*100;
-            //Datos[3] = rd.NextDouble()*100;
+            Datos[0] = rd.NextDouble()*100;
+            Datos[1] = (rd.NextDouble()-0.2)*50;
+            Datos[2] = rd.NextDouble()*100;
+            Datos[3] = rd.NextDouble()*100;
             Actualizar_Labels();
-            label9.Text = Convert.ToString(TempNibles[5] | Modes["Auto"],2);
-            label6.Text = Convert.ToString((byte)(~(TempNibles[5] | Modes["Auto"])), 2);
             if (FileLoc != "" && t%intervalo==0)
             {
                 sw.Flush();
@@ -297,6 +359,45 @@ namespace Datos_Sensor
                 crearArchivoDeDatosToolStripMenuItem.Text = "Crear archivo de datos";
             }
         }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            msel = (msel + 1)%4;
+            Aire.mode = modos[msel];
+            ActualizarP_Control();
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            fssel = (fssel + 1) % 4;
+            Aire.fanspeed = fspeeds[fssel];
+            ActualizarP_Control();
+        }
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+            if (Aire.tmp < 30)
+                Aire.tmp++;
+            ActualizarP_Control();
+        }
+
+        private void button5_Click(object sender, EventArgs e)
+        {
+            if (Aire.tmp > 17)
+                Aire.tmp--;
+            ActualizarP_Control();
+        }
+
+        private void menuStrip1_ItemClicked(object sender, ToolStripItemClickedEventArgs e)
+        {
+
+        }
+
+        private void panel4_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
+
         private void Form1_FormClosed(object sender, FormClosedEventArgs e)
         {
             try
@@ -330,6 +431,17 @@ namespace Datos_Sensor
             {
                 Cb.Enabled = false;
             }
+        }
+        byte[] GenerateCodeAire()
+        {
+            byte[] Code = new byte[6];
+            Code[0] = 178;
+            Code[1] = 77;
+            Code[2] =(byte) ((Aire.mode == "Dry" || Aire.mode == "Auto") ? 31 : Fspeed[Aire.fanspeed] | 15)  ;
+            Code[3] = (byte)(~Code[2]);
+            Code[4] = (byte)((Aire.mode == "Dry" || Aire.mode == "Auto")? TempNibles[Aire.tmp-17] | Modes[Aire.mode]: (Aire.mode == "Fan") ? 228 : 0);
+            Code[5] = (byte)(~Code[4]);
+            return Code;
         }
     }
 }

@@ -39,8 +39,10 @@
             this.verToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.presionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.temperaturaToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.humedadToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ruidoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.luminocidadToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.controlToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.puertoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.panel1 = new System.Windows.Forms.Panel();
             this.tB_RB_P = new System.Windows.Forms.TextBox();
@@ -81,19 +83,18 @@
             this.lblRuido = new System.Windows.Forms.Label();
             this.label7 = new System.Windows.Forms.Label();
             this.P_Control = new System.Windows.Forms.Panel();
-            this.controlToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.button1 = new System.Windows.Forms.Button();
-            this.button2 = new System.Windows.Forms.Button();
-            this.button3 = new System.Windows.Forms.Button();
-            this.button4 = new System.Windows.Forms.Button();
-            this.button5 = new System.Windows.Forms.Button();
-            this.panel6 = new System.Windows.Forms.Panel();
-            this.label5 = new System.Windows.Forms.Label();
-            this.label10 = new System.Windows.Forms.Label();
             this.label13 = new System.Windows.Forms.Label();
-            this.label14 = new System.Windows.Forms.Label();
-            this.label15 = new System.Windows.Forms.Label();
-            this.label16 = new System.Windows.Forms.Label();
+            this.label10 = new System.Windows.Forms.Label();
+            this.label5 = new System.Windows.Forms.Label();
+            this.panel6 = new System.Windows.Forms.Panel();
+            this.lbl_CTmp = new System.Windows.Forms.Label();
+            this.lbl_CFspeed = new System.Windows.Forms.Label();
+            this.lbl_CMode = new System.Windows.Forms.Label();
+            this.button5 = new System.Windows.Forms.Button();
+            this.button4 = new System.Windows.Forms.Button();
+            this.button3 = new System.Windows.Forms.Button();
+            this.button2 = new System.Windows.Forms.Button();
+            this.button1 = new System.Windows.Forms.Button();
             this.menuStrip1.SuspendLayout();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
@@ -116,6 +117,7 @@
             this.menuStrip1.Size = new System.Drawing.Size(1020, 24);
             this.menuStrip1.TabIndex = 0;
             this.menuStrip1.Text = "menuStrip1";
+            this.menuStrip1.ItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.menuStrip1_ItemClicked);
             // 
             // archivoToolStripMenuItem
             // 
@@ -167,6 +169,7 @@
             this.verToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.presionToolStripMenuItem,
             this.temperaturaToolStripMenuItem,
+            this.humedadToolStripMenuItem,
             this.ruidoToolStripMenuItem,
             this.luminocidadToolStripMenuItem,
             this.controlToolStripMenuItem});
@@ -178,7 +181,7 @@
             // 
             this.presionToolStripMenuItem.CheckOnClick = true;
             this.presionToolStripMenuItem.Name = "presionToolStripMenuItem";
-            this.presionToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.presionToolStripMenuItem.Size = new System.Drawing.Size(144, 22);
             this.presionToolStripMenuItem.Text = "Presion";
             this.presionToolStripMenuItem.Click += new System.EventHandler(this.presionToolStripMenuItem_Click);
             // 
@@ -186,15 +189,22 @@
             // 
             this.temperaturaToolStripMenuItem.CheckOnClick = true;
             this.temperaturaToolStripMenuItem.Name = "temperaturaToolStripMenuItem";
-            this.temperaturaToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.temperaturaToolStripMenuItem.Size = new System.Drawing.Size(144, 22);
             this.temperaturaToolStripMenuItem.Text = "Temperatura";
             this.temperaturaToolStripMenuItem.Click += new System.EventHandler(this.temperaturaToolStripMenuItem_Click);
+            // 
+            // humedadToolStripMenuItem
+            // 
+            this.humedadToolStripMenuItem.Name = "humedadToolStripMenuItem";
+            this.humedadToolStripMenuItem.Size = new System.Drawing.Size(144, 22);
+            this.humedadToolStripMenuItem.Text = "Humedad";
+            this.humedadToolStripMenuItem.Click += new System.EventHandler(this.humedadToolStripMenuItem_Click);
             // 
             // ruidoToolStripMenuItem
             // 
             this.ruidoToolStripMenuItem.CheckOnClick = true;
             this.ruidoToolStripMenuItem.Name = "ruidoToolStripMenuItem";
-            this.ruidoToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.ruidoToolStripMenuItem.Size = new System.Drawing.Size(144, 22);
             this.ruidoToolStripMenuItem.Text = "Ruido";
             this.ruidoToolStripMenuItem.Click += new System.EventHandler(this.ruidoToolStripMenuItem_Click);
             // 
@@ -202,9 +212,16 @@
             // 
             this.luminocidadToolStripMenuItem.CheckOnClick = true;
             this.luminocidadToolStripMenuItem.Name = "luminocidadToolStripMenuItem";
-            this.luminocidadToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.luminocidadToolStripMenuItem.Size = new System.Drawing.Size(144, 22);
             this.luminocidadToolStripMenuItem.Text = "Luminocidad";
             this.luminocidadToolStripMenuItem.Click += new System.EventHandler(this.luminocidadToolStripMenuItem_Click);
+            // 
+            // controlToolStripMenuItem
+            // 
+            this.controlToolStripMenuItem.Name = "controlToolStripMenuItem";
+            this.controlToolStripMenuItem.Size = new System.Drawing.Size(144, 22);
+            this.controlToolStripMenuItem.Text = "Control";
+            this.controlToolStripMenuItem.Click += new System.EventHandler(this.controlToolStripMenuItem_Click);
             // 
             // puertoToolStripMenuItem
             // 
@@ -456,6 +473,7 @@
             this.panel4.Name = "panel4";
             this.panel4.Size = new System.Drawing.Size(154, 220);
             this.panel4.TabIndex = 4;
+            this.panel4.Paint += new System.Windows.Forms.PaintEventHandler(this.panel4_Paint);
             // 
             // label12
             // 
@@ -608,52 +626,76 @@
             this.P_Control.Size = new System.Drawing.Size(200, 220);
             this.P_Control.TabIndex = 6;
             // 
-            // controlToolStripMenuItem
+            // label13
             // 
-            this.controlToolStripMenuItem.Name = "controlToolStripMenuItem";
-            this.controlToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.controlToolStripMenuItem.Text = "Control";
+            this.label13.AutoSize = true;
+            this.label13.Font = new System.Drawing.Font("Microsoft Sans Serif", 6.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label13.Location = new System.Drawing.Point(152, 149);
+            this.label13.Name = "label13";
+            this.label13.Size = new System.Drawing.Size(25, 12);
+            this.label13.TabIndex = 8;
+            this.label13.Text = "TMP";
             // 
-            // button1
+            // label10
             // 
-            this.button1.BackColor = System.Drawing.Color.Crimson;
-            this.button1.ForeColor = System.Drawing.SystemColors.ButtonHighlight;
-            this.button1.Location = new System.Drawing.Point(73, 140);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(61, 52);
-            this.button1.TabIndex = 0;
-            this.button1.Text = "ON\r\n\r\nOFF";
-            this.button1.UseVisualStyleBackColor = false;
+            this.label10.AutoSize = true;
+            this.label10.Font = new System.Drawing.Font("Microsoft Sans Serif", 6.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label10.Location = new System.Drawing.Point(12, 194);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(58, 12);
+            this.label10.TabIndex = 7;
+            this.label10.Text = "FAN SPEED";
             // 
-            // button2
+            // label5
             // 
-            this.button2.BackColor = System.Drawing.Color.DodgerBlue;
-            this.button2.Location = new System.Drawing.Point(23, 121);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(28, 23);
-            this.button2.TabIndex = 1;
-            this.button2.UseVisualStyleBackColor = false;
+            this.label5.AutoSize = true;
+            this.label5.Font = new System.Drawing.Font("Microsoft Sans Serif", 6.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label5.Location = new System.Drawing.Point(20, 110);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(34, 12);
+            this.label5.TabIndex = 6;
+            this.label5.Text = "MODE";
             // 
-            // button3
+            // panel6
             // 
-            this.button3.BackColor = System.Drawing.Color.DodgerBlue;
-            this.button3.Location = new System.Drawing.Point(23, 169);
-            this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(28, 23);
-            this.button3.TabIndex = 2;
-            this.button3.UseVisualStyleBackColor = false;
+            this.panel6.BackColor = System.Drawing.Color.SeaGreen;
+            this.panel6.Controls.Add(this.lbl_CTmp);
+            this.panel6.Controls.Add(this.lbl_CFspeed);
+            this.panel6.Controls.Add(this.lbl_CMode);
+            this.panel6.Location = new System.Drawing.Point(23, 23);
+            this.panel6.Name = "panel6";
+            this.panel6.Size = new System.Drawing.Size(159, 83);
+            this.panel6.TabIndex = 5;
             // 
-            // button4
+            // lbl_CTmp
             // 
-            this.button4.BackColor = System.Drawing.Color.DodgerBlue;
-            this.button4.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.button4.Location = new System.Drawing.Point(154, 121);
-            this.button4.Name = "button4";
-            this.button4.Padding = new System.Windows.Forms.Padding(0, 2, 0, 0);
-            this.button4.Size = new System.Drawing.Size(28, 23);
-            this.button4.TabIndex = 3;
-            this.button4.Text = "^";
-            this.button4.UseVisualStyleBackColor = false;
+            this.lbl_CTmp.AutoSize = true;
+            this.lbl_CTmp.Font = new System.Drawing.Font("Microsoft Sans Serif", 18.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lbl_CTmp.Location = new System.Drawing.Point(23, 24);
+            this.lbl_CTmp.Name = "lbl_CTmp";
+            this.lbl_CTmp.Size = new System.Drawing.Size(54, 29);
+            this.lbl_CTmp.TabIndex = 2;
+            this.lbl_CTmp.Text = "23°";
+            // 
+            // lbl_CFspeed
+            // 
+            this.lbl_CFspeed.AutoSize = true;
+            this.lbl_CFspeed.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lbl_CFspeed.Location = new System.Drawing.Point(3, 63);
+            this.lbl_CFspeed.Name = "lbl_CFspeed";
+            this.lbl_CFspeed.Size = new System.Drawing.Size(35, 16);
+            this.lbl_CFspeed.TabIndex = 1;
+            this.lbl_CFspeed.Text = "Low";
+            // 
+            // lbl_CMode
+            // 
+            this.lbl_CMode.AutoSize = true;
+            this.lbl_CMode.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lbl_CMode.Location = new System.Drawing.Point(0, 4);
+            this.lbl_CMode.Name = "lbl_CMode";
+            this.lbl_CMode.Size = new System.Drawing.Size(39, 16);
+            this.lbl_CMode.TabIndex = 0;
+            this.lbl_CMode.Text = "Auto";
             // 
             // button5
             // 
@@ -666,77 +708,51 @@
             this.button5.TabIndex = 4;
             this.button5.Text = "v";
             this.button5.UseVisualStyleBackColor = false;
+            this.button5.Click += new System.EventHandler(this.button5_Click);
             // 
-            // panel6
+            // button4
             // 
-            this.panel6.BackColor = System.Drawing.Color.SeaGreen;
-            this.panel6.Controls.Add(this.label16);
-            this.panel6.Controls.Add(this.label15);
-            this.panel6.Controls.Add(this.label14);
-            this.panel6.Location = new System.Drawing.Point(23, 23);
-            this.panel6.Name = "panel6";
-            this.panel6.Size = new System.Drawing.Size(159, 83);
-            this.panel6.TabIndex = 5;
+            this.button4.BackColor = System.Drawing.Color.DodgerBlue;
+            this.button4.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.button4.Location = new System.Drawing.Point(154, 121);
+            this.button4.Name = "button4";
+            this.button4.Padding = new System.Windows.Forms.Padding(0, 2, 0, 0);
+            this.button4.Size = new System.Drawing.Size(28, 23);
+            this.button4.TabIndex = 3;
+            this.button4.Text = "^";
+            this.button4.UseVisualStyleBackColor = false;
+            this.button4.Click += new System.EventHandler(this.button4_Click);
             // 
-            // label5
+            // button3
             // 
-            this.label5.AutoSize = true;
-            this.label5.Font = new System.Drawing.Font("Microsoft Sans Serif", 6.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label5.Location = new System.Drawing.Point(20, 110);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(34, 12);
-            this.label5.TabIndex = 6;
-            this.label5.Text = "MODE";
+            this.button3.BackColor = System.Drawing.Color.DodgerBlue;
+            this.button3.Location = new System.Drawing.Point(23, 169);
+            this.button3.Name = "button3";
+            this.button3.Size = new System.Drawing.Size(28, 23);
+            this.button3.TabIndex = 2;
+            this.button3.UseVisualStyleBackColor = false;
+            this.button3.Click += new System.EventHandler(this.button3_Click);
             // 
-            // label10
+            // button2
             // 
-            this.label10.AutoSize = true;
-            this.label10.Font = new System.Drawing.Font("Microsoft Sans Serif", 6.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label10.Location = new System.Drawing.Point(12, 194);
-            this.label10.Name = "label10";
-            this.label10.Size = new System.Drawing.Size(58, 12);
-            this.label10.TabIndex = 7;
-            this.label10.Text = "FAN SPEED";
+            this.button2.BackColor = System.Drawing.Color.DodgerBlue;
+            this.button2.Location = new System.Drawing.Point(23, 121);
+            this.button2.Name = "button2";
+            this.button2.Size = new System.Drawing.Size(28, 23);
+            this.button2.TabIndex = 1;
+            this.button2.UseVisualStyleBackColor = false;
+            this.button2.Click += new System.EventHandler(this.button2_Click);
             // 
-            // label13
+            // button1
             // 
-            this.label13.AutoSize = true;
-            this.label13.Font = new System.Drawing.Font("Microsoft Sans Serif", 6.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label13.Location = new System.Drawing.Point(152, 149);
-            this.label13.Name = "label13";
-            this.label13.Size = new System.Drawing.Size(25, 12);
-            this.label13.TabIndex = 8;
-            this.label13.Text = "TMP";
-            // 
-            // label14
-            // 
-            this.label14.AutoSize = true;
-            this.label14.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label14.Location = new System.Drawing.Point(0, 4);
-            this.label14.Name = "label14";
-            this.label14.Size = new System.Drawing.Size(41, 13);
-            this.label14.TabIndex = 0;
-            this.label14.Text = "AUTO";
-            // 
-            // label15
-            // 
-            this.label15.AutoSize = true;
-            this.label15.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label15.Location = new System.Drawing.Point(3, 66);
-            this.label15.Name = "label15";
-            this.label15.Size = new System.Drawing.Size(35, 13);
-            this.label15.TabIndex = 1;
-            this.label15.Text = "LOW";
-            // 
-            // label16
-            // 
-            this.label16.AutoSize = true;
-            this.label16.Font = new System.Drawing.Font("Microsoft Sans Serif", 18.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label16.Location = new System.Drawing.Point(23, 24);
-            this.label16.Name = "label16";
-            this.label16.Size = new System.Drawing.Size(54, 29);
-            this.label16.TabIndex = 2;
-            this.label16.Text = "23°";
+            this.button1.BackColor = System.Drawing.Color.Crimson;
+            this.button1.ForeColor = System.Drawing.SystemColors.ButtonHighlight;
+            this.button1.Location = new System.Drawing.Point(73, 140);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(61, 52);
+            this.button1.TabIndex = 0;
+            this.button1.Text = "ON\r\n\r\nOFF";
+            this.button1.UseVisualStyleBackColor = false;
             // 
             // Form1
             // 
@@ -838,13 +854,14 @@
         private System.Windows.Forms.Label label10;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.Panel panel6;
-        private System.Windows.Forms.Label label16;
-        private System.Windows.Forms.Label label15;
-        private System.Windows.Forms.Label label14;
+        private System.Windows.Forms.Label lbl_CTmp;
+        private System.Windows.Forms.Label lbl_CFspeed;
+        private System.Windows.Forms.Label lbl_CMode;
         private System.Windows.Forms.Button button5;
         private System.Windows.Forms.Button button4;
         private System.Windows.Forms.Button button3;
         private System.Windows.Forms.Button button2;
         private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.ToolStripMenuItem humedadToolStripMenuItem;
     }
 }
