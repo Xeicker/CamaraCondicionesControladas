@@ -199,6 +199,20 @@ namespace Datos_Sensor
                 ActualizarP_Control();
             Actualizar_Paneles();
         }
+        private void luminocidadToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            opciones_Seleccionadas[4] = !opciones_Seleccionadas[4];
+            ((ToolStripMenuItem)sender).Checked = opciones_Seleccionadas[4];
+            Actualizar_Paneles();
+        }
+        private void controlToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            opciones_Seleccionadas[5] = !opciones_Seleccionadas[5];
+            ((ToolStripMenuItem)sender).Checked = opciones_Seleccionadas[5];
+            if (opciones_Seleccionadas[5])
+                ActualizarP_Control();
+            Actualizar_Paneles();
+        }
         void Actualizar_Paneles()
         {
             int posicion = 10;
