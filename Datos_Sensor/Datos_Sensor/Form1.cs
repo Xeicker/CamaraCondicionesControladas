@@ -196,21 +196,10 @@ namespace Datos_Sensor
             opciones_Seleccionadas[5] = !opciones_Seleccionadas[5];
             ((ToolStripMenuItem)sender).Checked = opciones_Seleccionadas[5];
             if (opciones_Seleccionadas[5])
+            {
                 ActualizarP_Control();
-            Actualizar_Paneles();
-        }
-        private void luminocidadToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            opciones_Seleccionadas[4] = !opciones_Seleccionadas[4];
-            ((ToolStripMenuItem)sender).Checked = opciones_Seleccionadas[4];
-            Actualizar_Paneles();
-        }
-        private void controlToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            opciones_Seleccionadas[5] = !opciones_Seleccionadas[5];
-            ((ToolStripMenuItem)sender).Checked = opciones_Seleccionadas[5];
-            if (opciones_Seleccionadas[5])
-                ActualizarP_Control();
+                
+            }
             Actualizar_Paneles();
         }
         void Actualizar_Paneles()
@@ -232,6 +221,9 @@ namespace Datos_Sensor
         }
         void ActualizarP_Control()
         {
+            if (!spEmisor.IsOpen)
+                spEmisor.Open();
+
             lbl_CMode.Text = Aire.mode;
             lbl_CTmp.Text = Aire.tmp.ToString() + "°";
             lbl_CFspeed.Text = Aire.fanspeed;
@@ -240,7 +232,9 @@ namespace Datos_Sensor
             foreach(byte b in Code)
             {
                 label14.Text += b.ToString() + ",";
+                spEmisor.WriteLine(b.ToString());
             }
+            
         }
         void Actualizar_Labels()
         {
@@ -424,6 +418,12 @@ namespace Datos_Sensor
                 spXDK.Close();
             }
             catch { }
+            try
+            {
+                spEmisor.Close();
+            }
+            catch { }
+            
         }
         private void saveFileDialog1_FileOk(object sender, CancelEventArgs e)
         {
